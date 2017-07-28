@@ -1,0 +1,302 @@
+<html>
+	<head>
+		<title>  GAME OF LIFE </title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<style>
+	
+	#MainTitle, #Instruction {
+		pointer-events: none;
+	}
+	</style>
+	</head>
+	<body>
+		<canvas id="myCanvas"></canvas> 
+		<div id='MainTitle' style="position: absolute; z-index: 1;">GAME OF LIFE</div>
+		<div id='Instruction' style="position: absolute; z-index: 1;"></div>
+		
+
+		<script>
+
+		cellsidelength = 14;
+		cellgap = 1;
+
+
+		var c = document.getElementById("myCanvas");
+		var ctx = c.getContext("2d");
+		var title = document.getElementById("MainTitle")
+		var inst = document.getElementById("Instruction")
+		var opts = document.getElementById("Options")
+
+		var canvaswidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+		var canvasheight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
+		// Above Inner Window Size code from https://stackoverflow.com/a/28241682
+
+
+		// canvaswidth = window.innerWidth;
+		// canvasheight = window.innerHeight;
+
+		console.log([canvaswidth,canvasheight]);
+
+		canvaswidth = canvaswidth - 30; 
+		// To deal with the extra width from the window Innerwith function
+		canvasheight = canvasheight - 30;
+		ctx.canvas.width = canvaswidth;
+		ctx.canvas.height = canvasheight;
+
+		function DrawCell(X1,Y1,X2,Y2,fillColor) {
+			ctx.fillStyle=fillColor;
+			ctx.fillRect(X1,Y1,X2,Y2);
+		}
+
+		function DrawBorder() {
+			ctx.lineWidth = '3px';
+			ctx.rect(0,0,canvaswidth,canvasheight);
+			ctx.stroke();
+		}
+
+		DrawBorder()
+
+		var cells = {};
+		var celldimensions = {};
+
+
+
+
+		var start = 0;
+
+		title.style.fontFamily = "Calibri";
+		title.style.left = 0;
+		title.style.top = 0;
+		mainFontSize =Math.min(canvasheight,canvaswidth)/13;
+		title.style.fontSize = mainFontSize;
+		title.style.height = 0;
+		title.style.textAlign = 'center';
+		title.style.width = canvaswidth;
+		title.style.wordSpacing = "18px";
+		title.style.letterSpacing = '18px';
+
+		inst.style.fontFamily = "Calibri";
+		inst.style.left = 0;
+		inst.style.top = 0;
+		inst.style.width = canvaswidth;
+		instFontSize = Math.min(canvasheight,canvaswidth)/30;
+		inst.style.fontSize = instFontSize;
+		inst.style.textAlign = 'center';
+		inst.style.paddingTop = canvasheight /2;
+		inst.style.height = 0;
+
+		title.style.paddingTop = ((canvasheight /2) - mainFontSize - instFontSize);
+
+		function DisplayTexts() {
+			
+
+			
+			if(start == 1) {
+				inst.innerHTML = "Click to place or remove seeds. <br/> Press spacebar to stop. <br/>";
+			}
+			if(start == 0) {
+				inst.innerHTML = "Click to place or remove seeds. <br/> Press spacebar to start. <br/> Default Seeding is called 'Glider Gun'.";
+			}
+		}
+
+		
+
+		xcount = 0;
+		for(xpos = cellgap; xpos < canvaswidth - cellsidelength; xpos = xpos + cellsidelength + cellgap) {
+			ycount = 0;
+			for(ypos = cellgap; ypos < canvasheight - cellsidelength; ypos = ypos + cellsidelength + cellgap) {
+				cells[xcount.toString() + ',' + ycount.toString()] = 'Dead';
+				celldimensions[xcount.toString() + ',' + ycount.toString()] = [xpos,ypos];
+				//DrawCell(xpos, ypos, cellsidelength, cellsidelength, "rgba(131, 3, 251, 0.12)");
+				ycount = ycount + 1;
+			}
+			xcount = xcount + 1;
+		}
+
+		function Seed(name) {
+			if (name == 'glidergun') {
+				LiveCells = [[3, 5 ],[ 4, 5 ],[ 3, 6 ],[ 4, 6 ],[ 12, 5 ],[ 13, 5 ],[ 13, 6 ],[ 11, 6 ],[ 11, 7 ],[ 12, 7 ],[ 27, 3 ],[ 26, 5 ],[ 27, 4 ],[ 26, 3 ],[ 25, 5 ],[ 25, 4 ],[ 26, 5 ],[ 37, 3 ],[ 37, 4 ],[ 38, 4 ],[ 38, 3 ],[ 19, 7 ],[ 19, 7 ],[ 19, 8 ],[ 20, 7 ],[ 19, 9 ],[ 21, 8 ],[ 38, 10 ],[ 38, 11 ],[ 38, 12 ],[ 39, 10 ],[ 40, 11 ],[27, 15 ],[ 27, 16 ],[ 28, 15 ],[ 29, 15 ],[ 28, 17 ]]
+			}
+
+			 
+			
+			for (i = 0; i < LiveCells.length; i++) {
+				x = LiveCells[i][0]
+				y = LiveCells[i][1]
+				cells[x.toString() + ',' + y.toString()] = 'Live';
+			}
+		}
+
+
+		function GetNeighboursStates(cellx,celly) {
+			var neighbourdirection = ['E','NE','N','NW','W','SW','S','SE'];
+			var neighbourdirectionval = [[1,0], [1,-1], [0,-1], [-1,-1], [-1,0], [-1,1], [0,1], [1,1]];
+			var deadlist = [];
+			var livelist = [];
+			for (i = 0; i < 8; i ++) {
+				try {
+					Cellstate = cells[(cellx + neighbourdirectionval[i][0]).toString() + ',' + (celly + neighbourdirectionval[i][1]).toString()];
+					if(Cellstate == 'Dead') {
+						deadlist.push([cellx + neighbourdirectionval[i][0],celly + neighbourdirectionval[i][1]]);
+					}
+					if(Cellstate == 'Live') {
+						livelist.push([cellx + neighbourdirectionval[i][0],celly + neighbourdirectionval[i][1]]);
+					}
+				}
+				catch(err) {
+					console.log(" Err ");
+				}
+			}
+
+			return [deadlist,livelist];
+			
+		}
+
+
+		function DrawCellwithLabel(X1,Y1,fillColor) {
+			ctx.fillStyle=fillColor;
+			X = celldimensions[X1.toString() + ',' + Y1.toString()][0];
+			Y = celldimensions[X1.toString() + ',' + Y1.toString()][1];
+			ctx.fillRect(X,Y,cellsidelength,cellsidelength);
+		}
+
+		
+
+		function DrawCells() {
+			for (var key in cells) {
+				if (cells.hasOwnProperty(key)) {
+					if (cells[key] == 'Live') {
+						liveX = parseInt(key.split(",")[0]);
+						liveY = parseInt(key.split(",")[1]);
+						//DrawCellwithLabel(liveX, liveY, 'rgba(255, 255, 255,1)')
+						DrawCellwithLabel(liveX, liveY, 'orange')
+					}
+					if (cells[key] == 'Dead') {
+						liveX = parseInt(key.split(",")[0]);
+						liveY = parseInt(key.split(",")[1]);
+						DrawCellwithLabel(liveX, liveY, 'rgba(255, 255, 255,1)')
+						// Uncommenting the line below gives a color to the inactive cells.
+						//DrawCellwithLabel(liveX, liveY, 'rgba(131, 3, 251, 0.12)')
+					}
+
+				}
+			}
+		}
+
+		
+
+		function KillorReproduce() {
+			var tempcells = JSON.parse(JSON.stringify(cells));
+			var cellmemory = JSON.parse(JSON.stringify(cells));
+			for (var key in tempcells) {
+				if (tempcells.hasOwnProperty(key)) {
+					keyX = parseInt(key.split(",")[0]);
+					keyY = parseInt(key.split(",")[1]);
+					livecells = GetNeighboursStates(keyX,keyY)[1]
+					deadcells = GetNeighboursStates(keyX,keyY)[0]
+					
+					
+					if (cells[key] == 'Dead') {
+						if (livecells.length == 3) {
+							cellmemory[key] = 'Live';
+							DrawCellwithLabel(keyX, keyY, 'rgba(255, 255, 255,1)')
+							DrawCellwithLabel(keyX, keyY, 'orange')
+						}
+					}
+
+					if (cells[key] == 'Live') {
+						if (livecells.length < 2 || livecells.length > 3) {
+							cellmemory[key] = 'Dead';
+							DrawCellwithLabel(keyX, keyY, 'rgba(255, 255, 255,1)')
+						}
+						if (livecells.length == 3 || livecells.length == 2) {
+							cellmemory[key] = 'Live';
+							DrawCellwithLabel(keyX, keyY, 'rgba(255, 255, 255,1)')
+							DrawCellwithLabel(keyX, keyY, 'orange')
+						}
+					}
+
+				}
+			}
+			cells = JSON.parse(JSON.stringify(cellmemory));
+		}
+
+
+
+		Seed('glidergun');
+		DrawCells();
+		DisplayTexts();
+
+	
+
+		function clickResponse(event) {
+			var rect = c.getBoundingClientRect();
+			var posX = event.clientX - rect.left;
+			var posY = event.clientY - rect.top;
+
+			cX = parseInt((posX - (cellsidelength/5)) / (cellsidelength + cellgap));
+			cY = parseInt((posY - (cellsidelength/5)) / (cellsidelength + cellgap));
+			if (cX < xcount && cY < ycount  && cX >= 0 && cY >= 0) {
+				console.log([cX,cY])
+				if(cells[cX.toString() + ',' + cY.toString()] == 'Live') {
+					cells[cX.toString() + ',' + cY.toString()] = 'Dead';
+					DrawCellwithLabel(cX, cY, 'rgba(255, 255, 255,1)')
+				}
+				else {
+					cells[cX.toString() + ',' + cY.toString()] = 'Live';
+					DrawCellwithLabel(cX, cY, 'rgba(255, 255, 255,1)')
+					DrawCellwithLabel(cX, cY, 'orange')
+				}
+			}
+			
+			
+		}
+
+		
+
+		function keydownResponse(event) {
+			console.log(event.keyCode)
+			if(event.keyCode == 32) {
+				if(start == 1) {
+					start = 0;
+				}
+				else {
+					start = 1;
+				}
+			}
+		}
+
+		c.addEventListener('click', clickResponse);
+		document.addEventListener('keydown',keydownResponse);
+
+
+
+		// Sleep Function from https://stackoverflow.com/a/39914235
+
+		function sleep(ms) {
+			return new Promise(resolve => setTimeout(resolve, ms));
+		}
+
+		async function Loop() {
+			j = 0;
+			while (j >= 0) {
+
+				if (start == 1) {
+					j = j + 1;
+					KillorReproduce();
+				}
+				DisplayTexts();
+				await sleep(1);
+			}
+		}
+
+		Loop();
+
+		</script>
+
+		
+
+
+	</body>
+<html>
