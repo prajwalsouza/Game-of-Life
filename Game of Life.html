@@ -109,16 +109,16 @@
 
 		function Seed(name) {
 			if (name == 'glidergun') {
-				LiveCells = [[3, 5 ],[ 4, 5 ],[ 3, 6 ],[ 4, 6 ],[ 12, 5 ],[ 13, 5 ],[ 13, 6 ],[ 11, 6 ],[ 11, 7 ],[ 12, 7 ],[ 27, 3 ],[ 26, 5 ],[ 27, 4 ],[ 26, 3 ],[ 25, 5 ],[ 25, 4 ],[ 26, 5 ],[ 37, 3 ],[ 37, 4 ],[ 38, 4 ],[ 38, 3 ],[ 19, 7 ],[ 19, 7 ],[ 19, 8 ],[ 20, 7 ],[ 19, 9 ],[ 21, 8 ],[ 38, 10 ],[ 38, 11 ],[ 38, 12 ],[ 39, 10 ],[ 40, 11 ],[27, 15 ],[ 27, 16 ],[ 28, 15 ],[ 29, 15 ],[ 28, 17 ]]
+				liveCells = [[3, 5 ],[ 4, 5 ],[ 3, 6 ],[ 4, 6 ],[ 12, 5 ],[ 13, 5 ],[ 13, 6 ],[ 11, 6 ],[ 11, 7 ],[ 12, 7 ],[ 27, 3 ],[ 26, 5 ],[ 27, 4 ],[ 26, 3 ],[ 25, 5 ],[ 25, 4 ],[ 37, 3 ],[ 37, 4 ],[ 38, 4 ],[ 38, 3 ],[ 19, 7 ],[ 19, 8 ],[ 20, 7 ],[ 19, 9 ],[ 21, 8 ],[ 38, 10 ],[ 38, 11 ],[ 38, 12 ],[ 39, 10 ],[ 40, 11 ],[27, 15 ],[ 27, 16 ],[ 28, 15 ],[ 29, 15 ],[ 28, 17 ]]
 			}
-
-			 
+		 
 			
-			for (i = 0; i < LiveCells.length; i++) {
-				x = LiveCells[i][0];
-				y = LiveCells[i][1];
+			for (i = 0; i < liveCells.length; i++) {
+				x = liveCells[i][0];
+				y = liveCells[i][1];
 				if (x < xcount && y < ycount) {
 					cells[x.toString() + ',' + y.toString()] = 'Live';
+					liveCellData[x.toString() + ',' + y.toString()] = 1;
 				}
 			}
 		}
@@ -145,9 +145,12 @@
 
 
 		function DrawCellwithLabel(X1,Y1,fillColor) {
-			ctx.fillStyle=fillColor;
-			X = celldimensions[X1.toString() + ',' + Y1.toString()][0];
-			Y = celldimensions[X1.toString() + ',' + Y1.toString()][1];
+			ctx.fillStyle = fillColor;
+			X = (X1*(cellsidelength+cellgap)) + cellgap;
+			Y = (Y1*(cellsidelength+cellgap)) + cellgap;
+			if (X+cellsidelength < canvaswidth && Y+cellsidelength < canvasheight) {
+				ctx.fillRect(X,Y,cellsidelength,cellsidelength);
+			}
 			ctx.fillRect(X,Y,cellsidelength,cellsidelength);
 		}
 
@@ -178,33 +181,63 @@
 
 		function KillorReproduce() {
 			var tempcells = JSON.parse(JSON.stringify(cells));
-			
-			for (xC = 0; xC < xcount; xC++) {
-				for (yC = 0; yC < ycount; yC++) {
-					keyX = xC;
-					keyY = yC;
-					livecells = GetNeighboursStates(keyX,keyY);
-					
-					if (cells[keyX.toString() + ',' + keyY.toString()] == 'Dead') {
-						if (livecells.length == 3) {
-							tempcells[keyX.toString() + ',' + keyY.toString()] = 'Live';
-							//DrawCellwithLabel(keyX, keyY, 'rgba(255, 255, 255,1)')
-							DrawCellwithLabel(keyX, keyY, 'orange')
-						}
-					}
+			tempLiveCellData = JSON.parse(JSON.stringify(liveCellData));
 
-					if (cells[keyX.toString() + ',' + keyY.toString()] == 'Live') {
-						if (livecells.length < 2 || livecells.length > 3) {
-							tempcells[keyX.toString() + ',' + keyY.toString()] = 'Dead';
-							DrawCellwithLabel(keyX, keyY, 'rgba(255, 255, 255,1)')
+			for (var key in tempLiveCellData) {
+				if (tempLiveCellData.hasOwnProperty(key)) {
+					currentliveX = parseInt(key.split(",")[0]);
+					currentliveY = parseInt(key.split(",")[1]);
+
+					keyX = currentliveX;
+					keyY = currentliveY;
+
+					livecells = GetNeighboursStates(keyX,keyY);
+
+					if (livecells.length < 2 || livecells.length > 3) {
+						tempcells[keyX.toString() + ',' + keyY.toString()] = 'Dead';
+						delete liveCellData[key];
+						DrawCellwithLabel(keyX, keyY, 'rgba(255, 255, 255,1)')
+					}
+					
+
+					var neighbourdirections = [[1,0], [1,-1], [0,-1], [-1,-1], [-1,0], [-1,1], [0,1], [1,1]];
+					for (nni = 0; nni < 8; nni ++) {
+						
+						try {
+							checkcellX = currentliveX + neighbourdirections[nni][0];
+							checkcellY = currentliveY + neighbourdirections[nni][1];
+							keyX = checkcellX;
+							keyY = checkcellY;
+								
+							if (cells[keyX.toString() + ',' + keyY.toString()] == 'Dead') {
+								livecells = GetNeighboursStates(keyX,keyY);
+								if (livecells.length == 3) {
+									tempcells[keyX.toString() + ',' + keyY.toString()] = 'Live';
+									liveCellData[keyX.toString() + ',' + keyY.toString()] = 1;
+									//DrawCellwithLabel(keyX, keyY, 'rgba(255, 255, 255,1)')
+									DrawCellwithLabel(keyX, keyY, 'orange')
+								}
+							}
+
+						}
+						catch(err) {
+							console.log(" No Cell. ");
+
 						}
 					}
+					
 				}
 			}
-			
+
 			cells = JSON.parse(JSON.stringify(tempcells));
+
 		}
 
+
+		liveCellData = {};
+		Seed('glidergun');
+		DrawCells();
+		DisplayTexts();
 
 		function clickResponse(event) {
 			var rect = c.getBoundingClientRect();
@@ -216,10 +249,12 @@
 			if (cX < xcount && cY < ycount  && cX >= 0 && cY >= 0) {
 				if(cells[cX.toString() + ',' + cY.toString()] == 'Live') {
 					cells[cX.toString() + ',' + cY.toString()] = 'Dead';
+					delete liveCellData[cX.toString() + ',' + cY.toString()];
 					DrawCellwithLabel(cX, cY, 'rgba(255, 255, 255,1)')
 				}
 				else {
 					cells[cX.toString() + ',' + cY.toString()] = 'Live';
+					liveCellData[cX.toString() + ',' + cY.toString()] = 1;
 					DrawCellwithLabel(cX, cY, 'rgba(255, 255, 255,1)')
 					DrawCellwithLabel(cX, cY, 'orange')
 				}
@@ -227,6 +262,7 @@
 			
 			
 		}
+
 
 		
 
