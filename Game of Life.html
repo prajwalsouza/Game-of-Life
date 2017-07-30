@@ -33,11 +33,6 @@
 		// Above Inner Window Size code from https://stackoverflow.com/a/28241682
 
 
-		// canvaswidth = window.innerWidth;
-		// canvasheight = window.innerHeight;
-
-		console.log([canvaswidth,canvasheight]);
-
 		canvaswidth = canvaswidth - 30; 
 		// To deal with the extra width from the window Innerwith function
 		canvasheight = canvasheight - 30;
@@ -88,10 +83,8 @@
 
 		title.style.paddingTop = ((canvasheight /2) - mainFontSize - instFontSize);
 
+			
 		function DisplayTexts() {
-			
-
-			
 			if(start == 1) {
 				inst.innerHTML = "Click to place or remove seeds. <br/> Press spacebar to stop. <br/>";
 			}
@@ -124,7 +117,9 @@
 			for (i = 0; i < LiveCells.length; i++) {
 				x = LiveCells[i][0]
 				y = LiveCells[i][1]
-				cells[x.toString() + ',' + y.toString()] = 'Live';
+				if (x < xcount && y < ycount) {
+					cells[x.toString() + ',' + y.toString()] = 'Live';
+				}
 			}
 		}
 
@@ -223,13 +218,6 @@
 		}
 
 
-
-		Seed('glidergun');
-		DrawCells();
-		DisplayTexts();
-
-	
-
 		function clickResponse(event) {
 			var rect = c.getBoundingClientRect();
 			var posX = event.clientX - rect.left;
@@ -238,7 +226,6 @@
 			cX = parseInt((posX - (cellsidelength/5)) / (cellsidelength + cellgap));
 			cY = parseInt((posY - (cellsidelength/5)) / (cellsidelength + cellgap));
 			if (cX < xcount && cY < ycount  && cX >= 0 && cY >= 0) {
-				console.log([cX,cY])
 				if(cells[cX.toString() + ',' + cY.toString()] == 'Live') {
 					cells[cX.toString() + ',' + cY.toString()] = 'Dead';
 					DrawCellwithLabel(cX, cY, 'rgba(255, 255, 255,1)')
@@ -256,7 +243,6 @@
 		
 
 		function keydownResponse(event) {
-			console.log(event.keyCode)
 			if(event.keyCode == 32) {
 				if(start == 1) {
 					start = 0;
@@ -270,7 +256,9 @@
 		c.addEventListener('click', clickResponse);
 		document.addEventListener('keydown',keydownResponse);
 
-
+		Seed('glidergun');
+		DrawCells();
+		DisplayTexts();
 
 		// Sleep Function from https://stackoverflow.com/a/39914235
 
