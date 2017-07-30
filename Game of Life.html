@@ -260,48 +260,22 @@
 		DrawCells();
 		DisplayTexts();
 
-		// Sleep Function from https://stackoverflow.com/a/39914235
+		function Loop() {
+			var id = setInterval(frame, 10);
+			animationj = 0;
+			function frame() {
+				if (animationj < 0) {
+					clearInterval(id);
+				} 
+				else {
+					if (start == 1) {
+						animationj = animationj + 1;
+						KillorReproduce();
+					}
+					DisplayTexts();
 
-// 		function sleep(ms) {
-// 			return new Promise(resolve => setTimeout(resolve, ms));
-// 		}
-
-// 		async function Loop() {
-// 			j = 0;
-// 			while (j >= 0) {
-//
-// 				if (start == 1) {
-// 					j = j + 1;
-// 					KillorReproduce();
-// 				}
-// 				DisplayTexts();
-// 				await sleep(1);
-// 			}
-// 		}
-		
-		// The Sleep Function above was changed to fit well with lower versions for js for phone browsers using https://babeljs.io/
-		let Loop = (() => {
-		var _ref = _asyncToGenerator(function* () {
-				j = 0;
-				while (j >= 0) {
-						if (start == 1) {
-								j = j + 1;
-								KillorReproduce();
-						}
-						DisplayTexts();
-						yield sleep(1);
 				}
-		});
-
-		return function Loop() {
-				return _ref.apply(this, arguments);
-			};
-		})();
-
-		function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
-		function sleep(ms) {
-			return new Promise(resolve => setTimeout(resolve, ms));
+			}
 		}
 		Loop();
 
