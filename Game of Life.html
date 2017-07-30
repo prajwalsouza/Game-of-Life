@@ -115,8 +115,8 @@
 			 
 			
 			for (i = 0; i < LiveCells.length; i++) {
-				x = LiveCells[i][0]
-				y = LiveCells[i][1]
+				x = LiveCells[i][0];
+				y = LiveCells[i][1];
 				if (x < xcount && y < ycount) {
 					cells[x.toString() + ',' + y.toString()] = 'Live';
 				}
@@ -125,16 +125,11 @@
 
 
 		function GetNeighboursStates(cellx,celly) {
-			var neighbourdirection = ['E','NE','N','NW','W','SW','S','SE'];
 			var neighbourdirectionval = [[1,0], [1,-1], [0,-1], [-1,-1], [-1,0], [-1,1], [0,1], [1,1]];
-			var deadlist = [];
 			var livelist = [];
 			for (i = 0; i < 8; i ++) {
 				try {
 					Cellstate = cells[(cellx + neighbourdirectionval[i][0]).toString() + ',' + (celly + neighbourdirectionval[i][1]).toString()];
-					if(Cellstate == 'Dead') {
-						deadlist.push([cellx + neighbourdirectionval[i][0],celly + neighbourdirectionval[i][1]]);
-					}
 					if(Cellstate == 'Live') {
 						livelist.push([cellx + neighbourdirectionval[i][0],celly + neighbourdirectionval[i][1]]);
 					}
@@ -144,7 +139,7 @@
 				}
 			}
 
-			return [deadlist,livelist];
+			return livelist;
 			
 		}
 
@@ -183,38 +178,31 @@
 
 		function KillorReproduce() {
 			var tempcells = JSON.parse(JSON.stringify(cells));
-			var cellmemory = JSON.parse(JSON.stringify(cells));
-			for (var key in tempcells) {
-				if (tempcells.hasOwnProperty(key)) {
-					keyX = parseInt(key.split(",")[0]);
-					keyY = parseInt(key.split(",")[1]);
-					livecells = GetNeighboursStates(keyX,keyY)[1]
-					deadcells = GetNeighboursStates(keyX,keyY)[0]
+			
+			for (xC = 0; xC < xcount; xC++) {
+				for (yC = 0; yC < ycount; yC++) {
+					keyX = xC;
+					keyY = yC;
+					livecells = GetNeighboursStates(keyX,keyY);
 					
-					
-					if (cells[key] == 'Dead') {
+					if (cells[keyX.toString() + ',' + keyY.toString()] == 'Dead') {
 						if (livecells.length == 3) {
-							cellmemory[key] = 'Live';
-							DrawCellwithLabel(keyX, keyY, 'rgba(255, 255, 255,1)')
+							tempcells[keyX.toString() + ',' + keyY.toString()] = 'Live';
+							//DrawCellwithLabel(keyX, keyY, 'rgba(255, 255, 255,1)')
 							DrawCellwithLabel(keyX, keyY, 'orange')
 						}
 					}
 
-					if (cells[key] == 'Live') {
+					if (cells[keyX.toString() + ',' + keyY.toString()] == 'Live') {
 						if (livecells.length < 2 || livecells.length > 3) {
-							cellmemory[key] = 'Dead';
+							tempcells[keyX.toString() + ',' + keyY.toString()] = 'Dead';
 							DrawCellwithLabel(keyX, keyY, 'rgba(255, 255, 255,1)')
-						}
-						if (livecells.length == 3 || livecells.length == 2) {
-							cellmemory[key] = 'Live';
-							DrawCellwithLabel(keyX, keyY, 'rgba(255, 255, 255,1)')
-							DrawCellwithLabel(keyX, keyY, 'orange')
 						}
 					}
-
 				}
 			}
-			cells = JSON.parse(JSON.stringify(cellmemory));
+			
+			cells = JSON.parse(JSON.stringify(tempcells));
 		}
 
 
@@ -273,16 +261,15 @@
 						KillorReproduce();
 					}
 					DisplayTexts();
-
 				}
 			}
 		}
+
 		Loop();
 
 		</script>
 
 		
-
 
 	</body>
 <html>
