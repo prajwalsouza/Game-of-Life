@@ -3,16 +3,45 @@
 		<title>  GAME OF LIFE </title>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 	<style>
-	
 	#MainTitle, #Instruction {
 		pointer-events: none;
 	}
+
+	#SeedOptions {
+		transition: height .5s, visibility .2s;
+		height: 0px;
+		overflow-x: hidden;
+		overflow-y: scroll;
+	}
+
+	#Cellsizeadjust {
+		transition: height .5s, visibility .2s;
+		height: 0px;
+		overflow-x: hidden;
+	}
+
+	#Startbutton, #Seedbutton, #CellSizeopt {
+		box-shadow: 0px 12px 30px rgba(0,0,0,0.2);
+	}
+
 	</style>
 	</head>
 	<body>
 		<canvas id="myCanvas"></canvas> 
 		<div id='MainTitle' style="position: absolute; z-index: 1;">GAME OF LIFE</div>
 		<div id='Instruction' style="position: absolute; z-index: 1;"></div>
+		<div id='Startbutton'></div>
+		<div id='Seedbutton'></div>
+		<div id='Seedoptions'> 
+			<div id='glidergun'> Glider Gun </div> 
+			<div id='spaceship'> Clear Seeding </div>
+
+		</div>
+		<div id='CellSizeopt'></div>
+		<div id='Cellsizeadjust'> 
+			<canvas id="cellsizeCanvas"></canvas>
+		</div>
+		<div id='ToggleShowInstructions'></div>
 		
 
 		<script>
