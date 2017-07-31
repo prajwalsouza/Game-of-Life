@@ -532,10 +532,14 @@
 				size = 2*(Math.min(canvasheight,canvaswidth)/20);
 				cellsizeadjust.style.height = size;
 				DrawSlider(cellsidelength*canvaswidth/100,cellsidelength);
+				cellsizeadjust.addEventListener('mousemove', mousemoveResponse);
+				cellsizeadjust.addEventListener('click', clickcellsizeResponse);
 			}
 			else {
 				celladjustbuttonmode = 0;
 				cellsizeadjust.style.height = 0;
+				cellsizeadjust.removeEventListener('mousemove', mousemoveResponse);
+				cellsizeadjust.removeEventListener('click', clickcellsizeResponse);
 			}
 		}
 
@@ -620,8 +624,6 @@
 		glidergunopt.addEventListener('click',SeedGliderGun);
 		spaceshipopt.addEventListener('click',ClearSeed);
 		CellSizeopt.addEventListener('click', cellsizebuttonResponse);
-		cellsizeadjust.addEventListener('mousemove', mousemoveResponse);
-		cellsizeadjust.addEventListener('click', clickcellsizeResponse);
 		showHideText.addEventListener('click',showHideTextResponse);
 
 		
