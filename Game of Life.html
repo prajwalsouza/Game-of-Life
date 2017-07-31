@@ -23,21 +23,29 @@
 
 		var c = document.getElementById("myCanvas");
 		var ctx = c.getContext("2d");
-		var title = document.getElementById("MainTitle")
-		var inst = document.getElementById("Instruction")
-		var opts = document.getElementById("Options")
+		var c_cellsize = document.getElementById("cellsizeCanvas");
+		var ctx_cellsize = c_cellsize.getContext("2d");
+		var title = document.getElementById("MainTitle");
+		var inst = document.getElementById("Instruction");
+		var startbutton = document.getElementById("Startbutton");
+		var seedbutton = document.getElementById("Seedbutton");
+		var seedoptions = document.getElementById("Seedoptions");
+		var celloptions = document.getElementById("CellSizeopt");
+		var cellsizeadjust = document.getElementById("Cellsizeadjust");
+		var showHideText = document.getElementById("ToggleShowInstructions");
+
 
 		var canvaswidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 		var canvasheight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
 		// Above Inner Window Size code from https://stackoverflow.com/a/28241682
 
-
 		canvaswidth = canvaswidth - 30; 
 		// To deal with the extra width from the window Innerwith function
 		canvasheight = canvasheight - 30;
 		ctx.canvas.width = canvaswidth;
 		ctx.canvas.height = canvasheight;
+
 
 		function DrawCell(X1,Y1,X2,Y2,fillColor) {
 			ctx.fillStyle=fillColor;
@@ -50,7 +58,7 @@
 			ctx.stroke();
 		}
 
-		DrawBorder()
+		//DrawBorder()
 
 		var cells = {};
 		var celldimensions = {};
@@ -58,18 +66,18 @@
 
 
 
-		var start = 1;
+		var start = 0;
 
 		title.style.fontFamily = "Calibri";
 		title.style.left = 0;
 		title.style.top = 0;
-		mainFontSize =Math.min(canvasheight,canvaswidth)/13;
+		mainFontSize = Math.min(canvasheight,canvaswidth)/13;
 		title.style.fontSize = mainFontSize;
 		title.style.height = 0;
 		title.style.textAlign = 'center';
 		title.style.width = canvaswidth;
-		title.style.wordSpacing = "18px";
-		title.style.letterSpacing = '18px';
+		title.style.wordSpacing = canvaswidth/45;
+		title.style.letterSpacing = canvaswidth/45;
 
 		inst.style.fontFamily = "Calibri";
 		inst.style.left = 0;
@@ -83,14 +91,112 @@
 
 		title.style.paddingTop = ((canvasheight /2) - mainFontSize - instFontSize);
 
-			
+		startbutton.style.fontFamily = "Calibri";
+		startbutton.style.left = 0;
+		startbutton.style.top = 0;
+		startbutton.style.width = canvaswidth;
+		startbutton.style.fontSize = Math.min(canvasheight,canvaswidth)/22;
+		startbutton.style.textAlign = 'center';
+		startbutton.style.paddingTop = Math.min(canvasheight,canvaswidth)/60;
+		startbutton.style.paddingBottom = Math.min(canvasheight,canvaswidth)/60;
+		startbutton.style.backgroundColor = 'rgb(20, 172, 255)';
+		startbutton.style.color = 'rgb(255, 255, 255)';
+		startbutton.style.cursor = 'hand';
+
+		seedbutton.style.fontFamily = "Calibri";
+		seedbutton.style.left = 0;
+		seedbutton.style.top = 0;
+		seedbutton.innerHTML = 'Seeding Options';
+		seedbutton.style.width = canvaswidth;
+		seedbutton.style.fontSize = Math.min(canvasheight,canvaswidth)/22;
+		seedbutton.style.textAlign = 'center';
+		seedbutton.style.backgroundColor = 'rgb(114, 20, 255)';
+		seedbutton.style.color = 'rgb(255, 255, 255)';
+		seedbutton.style.cursor = 'hand';
+		seedbutton.style.paddingTop = Math.min(canvasheight,canvaswidth)/60;
+		seedbutton.style.paddingBottom = Math.min(canvasheight,canvaswidth)/60;
+
+		celloptions.style.fontFamily = "Calibri";
+		celloptions.style.left = 0;
+		celloptions.style.top = 0;
+		celloptions.innerHTML = 'Cell Size Adjustment <span style="font-size:'+ (Math.min(canvasheight,canvaswidth)/ 30) + 'px; color:black"><br />  Current Size : ' + cellsidelength +  '</span>';
+		celloptions.style.width = canvaswidth;
+		celloptions.style.fontSize = Math.min(canvasheight,canvaswidth)/22;
+		celloptions.style.textAlign = 'center';
+		celloptions.style.backgroundColor = 'rgb(255, 140, 0)';
+		celloptions.style.color = 'rgb(255, 255, 255)';
+		celloptions.style.cursor = 'hand';
+		celloptions.style.paddingTop = Math.min(canvasheight,canvaswidth)/60;
+		celloptions.style.paddingBottom = Math.min(canvasheight,canvaswidth)/60;
+
+		seedoptions.style.height = 0;
+		seedoptions.style.fontSize = Math.min(canvasheight,canvaswidth)/28;
+		seedFontSize = seedoptions.style.fontSize;
+		seedoptions.style.textAlign = 'center';
+		seedoptions.style.fontFamily = "Calibri";
+
+		glidergunopt = document.getElementById('glidergun');
+		spaceshipopt = document.getElementById('spaceship');
+		glidergunopt.style.paddingTop = Math.min(canvasheight,canvaswidth)/45;
+		spaceshipopt.style.paddingTop = Math.min(canvasheight,canvaswidth)/45;
+		glidergunopt.style.cursor = 'hand';
+		spaceshipopt.style.cursor = 'hand';
+
+		cellsizeadjust.style.height = 0;
+
+		ctx_cellsize.canvas.width = canvaswidth;
+		
+
+		size = 2*(Math.min(canvasheight,canvaswidth)/20);
+		ctx_cellsize.canvas.height = size;
+
+
+		showHideText.style.fontFamily = "Calibri";
+		showHideText.style.left = 0;
+		showHideText.style.top = 0;
+		showHideText.innerHTML = 'Hide Text';
+		showHideText.style.width = canvaswidth;
+		showHideText.style.fontSize = Math.min(canvasheight,canvaswidth)/22;
+		showHideText.style.textAlign = 'center';
+		showHideText.style.backgroundColor = 'rgb(11, 23, 248)';
+		showHideText.style.color = 'rgb(255, 255, 255)';
+		showHideText.style.cursor = 'hand';
+		showHideText.style.paddingTop = Math.min(canvasheight,canvaswidth)/60;
+		showHideText.style.paddingBottom = Math.min(canvasheight,canvaswidth)/60;
+
+
+		function DisplayControls() {
+			// Toggle Start/Stop
+
+			if (start == 1) {
+				startbutton.innerHTML = "Stop";
+			}
+			if (start == 0) {
+				startbutton.innerHTML = "Start";
+			}
+
+
+		}
+
+		var DisplayInst = 1;
+
 		function DisplayTexts() {
-			if(start == 1) {
-				inst.innerHTML = "Click to place or remove seeds. <br/> Press spacebar to stop. <br/>";
+
+			if (DisplayInst == 1) {
+				if(start == 1) {
+					inst.innerHTML = "Click to place or remove seeds. <br/> Press 's' to stop. <br />For more, check the controls at the bottom. <br/>";
+				}
+				if(start == 0) {
+					inst.innerHTML = "Click to place or remove seeds. <br/> Press 's' to start. <br />For more, check the controls at the bottom. <br/> Default Seeding is called 'Glider Gun'.";
+				}
 			}
-			if(start == 0) {
-				inst.innerHTML = "Click to place or remove seeds. <br/> Press spacebar to start. <br/> Default Seeding is called 'Glider Gun'.";
+
+			if (DisplayInst == 0) {
+				inst.innerHTML = "";
+				
 			}
+	
+				
 		}
 
 		
@@ -106,6 +212,7 @@
 			}
 			xcount = xcount + 1;
 		}
+
 
 		function Seed(name) {
 			if (name == 'glidergun') {
@@ -238,6 +345,7 @@
 		Seed('glidergun');
 		DrawCells();
 		DisplayTexts();
+		DisplayControls();
 
 		function clickResponse(event) {
 			var rect = c.getBoundingClientRect();
@@ -264,10 +372,169 @@
 		}
 
 
-		
+		function DrawSlider(sliderpositionX, slidervalue) {
+
+			ctx_cellsize.clearRect(0, 0, ctx_cellsize.canvas.width, ctx_cellsize.canvas.height);
+
+			ctx_cellsize.save();
+			ctx_cellsize.beginPath();
+			ctx_cellsize.fillStyle = 'white';
+			sliderXpar1 = (canvaswidth*5/100);
+			sliderYpar1 = (ctx_cellsize.canvas.height/2);
+			sliderXpar2 = (canvaswidth*90/100) - (canvaswidth*5/100);
+			sliderYpar2 = (ctx_cellsize.canvas.height/5);
+			ctx_cellsize.fillRect(sliderXpar1,sliderYpar1,sliderXpar2,sliderYpar2);
+
+			ctx_cellsize.beginPath();
+			ctx_cellsize.rect(sliderXpar1,sliderYpar1,sliderXpar2,sliderYpar2);
+			ctx_cellsize.clip();
+
+			ctx_cellsize.beginPath();
+  			ctx_cellsize.strokeStyle = 'white';
+  			ctx_cellsize.lineWidth = 1;
+			ctx_cellsize.shadowBlur = ctx_cellsize.canvas.height/8;
+			ctx_cellsize.shadowColor = 'black';
+			ctx_cellsize.shadowOffsetX = 0;
+			ctx_cellsize.shadowOffsetY = ctx_cellsize.canvas.height/20;
+			ctx_cellsize.rect(sliderXpar1,sliderYpar1,sliderXpar2,sliderYpar2);
+			ctx_cellsize.stroke();
+
+			ctx_cellsize.restore();
+
+			ctx_cellsize.shadowBlur = 0;
+
+			ctx_cellsize.fillStyle = 'rgba(255, 255, 255,1)';
+			ctx_cellsize.strokeStyle = 'rgba(255, 255, 255,1)';
+
+			ctx_cellsize.shadowColor = 'black';
+			ctx_cellsize.shadowOffsetX = 0;
+			ctx_cellsize.shadowOffsetY = ctx_cellsize.canvas.height/20;
+			ctx_cellsize.shadowBlur = ctx_cellsize.canvas.height/8;
+			ctx_cellsize.beginPath();
+			sliderY = sliderYpar2 + sliderYpar1 - (sliderYpar2/2);
+
+			sliderX = sliderpositionX;
+			if (sliderpositionX < sliderXpar1) {
+				sliderX = sliderXpar1;
+			}
+			if (sliderpositionX > (sliderXpar1 + sliderXpar2)) {
+				sliderX = sliderXpar1 + sliderXpar2;
+			}
+
+				
+			
+			ctx_cellsize.arc(sliderX,sliderY,sliderYpar2/1.5 ,0,2*Math.PI,false);
+			ctx_cellsize.closePath();
+			ctx_cellsize.fill();
+			ctx_cellsize.shadowBlur = 0;
+
+			ctx_cellsize.fillStyle = 'black';
+			ctx_cellsize.shadowColor = 'white';
+			ctx_cellsize.shadowOffsetX = 0;
+			ctx_cellsize.shadowOffsetY = 0;
+			ctx_cellsize.shadowBlur = 0;
+			ctx_cellsize.font = String(Math.min(canvasheight,canvaswidth)/20) + "px Calibri";
+			ctx_cellsize.fillText(slidervalue,sliderXpar2 + (canvaswidth*7/100),ctx_cellsize.canvas.height/1.3);
+			ctx_cellsize.stroke();
+		}
+
+		function mousemoveResponse(event) {
+			var posX = event.clientX;
+			var posY = event.clientY;
+
+			colorparameter = parseInt((posX*100/canvaswidth));
+			if (colorparameter < 5) {
+				colorparameter = 5;
+			}
+			if (colorparameter > 90) {
+				colorparameter =  90;
+			}
+
+			DrawSlider(posX,colorparameter);
+		}
+
+		function clickcellsizeResponse(event) {
+			var posX = event.clientX;
+			var posY = event.clientY;
+
+			colorparameter = parseInt((posX*100/canvaswidth));
+			if (colorparameter < 5) {
+				colorparameter = 5;
+			}
+			if (colorparameter > 90) {
+				colorparameter =  90;
+			}
+
+			cellsidelength = colorparameter;
+
+			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+			cells = {};
+			celldimensions = {};
+			CellInit();
+			liveCellData = {};
+			Seed('glidergun');
+			DrawCells();
+			DisplayTexts();
+			DisplayControls();
+			celloptions.innerHTML = 'Cell Size Adjustment <span style="font-size:'+ (Math.min(canvasheight,canvaswidth)/ 30) + 'px; color:black"><br />  Current Size : ' + cellsidelength +  '</span>';
+
+
+		}
+
+		seedbuttonmode = 0;
+
+		function seedbuttonResponse(event) {
+			if(seedbuttonmode == 0) {
+				seedbuttonmode = 1;
+				size = 3*(Math.min(canvasheight,canvaswidth)/20);
+				seedoptions.style.height = size;
+			}
+			else {
+				seedbuttonmode = 0;
+				seedoptions.style.height = 0;
+			}
+		}
+
+		celladjustbuttonmode = 0;
+
+		function cellsizebuttonResponse(event) {
+			if(celladjustbuttonmode == 0) {
+				celladjustbuttonmode = 1;
+				size = 2*(Math.min(canvasheight,canvaswidth)/20);
+				cellsizeadjust.style.height = size;
+				DrawSlider(cellsidelength*canvaswidth/100,cellsidelength);
+			}
+			else {
+				celladjustbuttonmode = 0;
+				cellsizeadjust.style.height = 0;
+			}
+		}
+
+		function startbuttonResponse(event) {
+			if(start == 1) {
+				start = 0;
+			}
+			else {
+				start = 1;
+			}
+		}
+
+		function showHideTextResponse(event) {
+			if(DisplayInst == 1) {
+				DisplayInst = 0;
+				showHideText.innerHTML = "Show Text";
+				title.innerHTML = "";
+			}
+			else {
+				DisplayInst = 1;
+				showHideText.innerHTML = "Hide Text";
+				title.innerHTML = "GAME OF LIFE";
+			}
+			DisplayTexts();
+		}
 
 		function keydownResponse(event) {
-			if(event.keyCode == 32) {
+			if(event.keyCode == 83) {
 				if(start == 1) {
 					start = 0;
 				}
@@ -277,13 +544,57 @@
 			}
 		}
 
+		function CellInit() {
+			xcount = 0;
+			for(xpos = cellgap; xpos < canvaswidth - cellsidelength; xpos = xpos + cellsidelength + cellgap) {
+				ycount = 0;
+				for(ypos = cellgap; ypos < canvasheight - cellsidelength; ypos = ypos + cellsidelength + cellgap) {
+					cells[xcount.toString() + ',' + ycount.toString()] = 'Dead';
+					celldimensions[xcount.toString() + ',' + ycount.toString()] = [xpos,ypos];
+					//DrawCell(xpos, ypos, cellsidelength, cellsidelength, "rgba(131, 3, 251, 0.12)");
+					ycount = ycount + 1;
+				}
+				xcount = xcount + 1;
+			}
+		}
+
+		function SeedGliderGun(event) {
+			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+			cells = {};
+			celldimensions = {};
+			CellInit();
+			liveCellData = {};
+			Seed('glidergun');
+			DrawCells();
+			DisplayTexts();
+			DisplayControls();
+		}
+
+		function ClearSeed(event) {
+			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+			cells = {};
+			celldimensions = {};
+			CellInit();
+			liveCellData = {};
+			DrawCells();
+			DisplayTexts();
+			DisplayControls();
+		}
+
+
+		
 		c.addEventListener('click', clickResponse);
 		document.addEventListener('keydown',keydownResponse);
+		startbutton.addEventListener('click', startbuttonResponse);
+		seedbutton.addEventListener('click', seedbuttonResponse);
+		glidergunopt.addEventListener('click',SeedGliderGun);
+		spaceshipopt.addEventListener('click',ClearSeed);
+		CellSizeopt.addEventListener('click', cellsizebuttonResponse);
+		cellsizeadjust.addEventListener('mousemove', mousemoveResponse);
+		cellsizeadjust.addEventListener('click', clickcellsizeResponse);
+		showHideText.addEventListener('click',showHideTextResponse);
 
-		Seed('glidergun');
-		DrawCells();
-		DisplayTexts();
-
+		
 		function Loop() {
 			var id = setInterval(frame, 10);
 			animationj = 0;
