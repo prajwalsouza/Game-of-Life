@@ -2,4 +2,4 @@
 
 For more, read [Conway's Game of Life - Wiki](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life).
 
-To view the simulation, check, [Game of Life : prajwalsouza](https://cdn.rawgit.com/prajwalsouza/Game-of-Life/8c448799/Game%20of%20Life.html).
+To view the simulation, check, [Game of Life : prajwalsouza](https://cdn.rawgit.com/prajwalsouza/Game-of-Life/06b0fb85/Game%20of%20Life.html).
